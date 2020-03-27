@@ -1,6 +1,8 @@
 #!/bin/bash
 
-#This is a script to save Youtube videos to your computer, in a fashion that Plex would easily understand
+# This is a script to save Youtube videos to your computer, in a fashion that Plex would easily understand
+# Created by Pranav Mishra. Last updated March 7, 2020
+# Online repository at https://github.com/pranavmishra90/Plex-Scripts
 
 #Dependencies
 # 1. youtube-dl
