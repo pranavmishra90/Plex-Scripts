@@ -1,0 +1,114 @@
+#!/bin/bash
+
+#This is a script to save Youtube videos to your computer, in a fashion that Plex would easily understand
+
+#Dependencies
+# 1. youtube-dl
+# 2. jq
+# 3. AtomicParseley
+# 4. ffmpeg
+
+
+# Variables you need to change
+
+    # Set a location where you want the videos downloaded
+    # You should create a "Youtube" directory within your Plex library folder
+    youtubedirectory=$(echo "/volume1/Plex-Media/Youtube/TV-on-Youtube")
+    resolution=$(echo 'height<=720')
+    
+# Recommendations
+#   1. Add an alias for this script so that you can call it quickly after SSHing from anywhere (great for mobile use)
+#   2. Adjust the maximum resolution based on personal usage (720p for fast streaming, higher resolutions for archival purposes)
+#   3. Keep your youtube directory inside your Plex directory. It allows you to migrate you library easier, if required
+    
+# -----------------------------------------------------------------------------
+# Do not edit below this line, unless you are testing mods to the script
+# -----------------------------------------------------------------------------
+
+
+
+
+
+# When the script runs, it will ask you to paste the Youtube video link
+# The link is saved into variable $vidurl
+read -p "Paste the youtube video link: " vidurl
+
+# Get the Youtube Channel Name
+userdir=$(/usr/local/bin/youtube-dl -j --flat-playlist "$vidurl" | jq -r '.uploader')
+
+# Create a subdirectory for the Youtube Channel if one does not exist, then go to that folder
+mkdir -p "$youtubedirectory"/"$userdir"
+cd "$youtubedirectory"/"$userdir"
+
+# Get the year the Youtube video was uploaded. This will be passed into the filename after the S for Season. (ie S2014 for the year 2014)
+# Youtube returns the entire date in the format YYYYMMDD
+videoyear=$(/usr/local/bin/youtube-dl -j --flat-playlist "$vidurl" | jq -r '.upload_date')
+# We want only the YYYY
+seasonyear=${videoyear%????}
+
+
+# -----------------------------------------------------------------------------
+# Statistics on your Plex Server's exiting videos from this YouTube Channel
+# -----------------------------------------------------------------------------
+echo "----------------------------------------"
+echo "The file will be downloaded to:"
+pwd
+
+
+# The total number of videos is FYI only
+echo Exising number of videos by "$userdir" :
+find . -type f -name '*.mp4' | wc -l | sed 's/ //g'
+echo " "
+
+# We need the number of videos already present for a given year in order to set the episode number for our incoming video
+echo Exising number of videos by "$userdir" in year "$seasonyear":
+ls *.mp4 | grep S"$seasonyear" | wc -l | sed 's/ //g' > index.txt #Current episode count is saved to index.txt
+
+#Extracting the first line from index.txt and saving it to $vidcount
+epnumber=$(head -1 index.txt 2>&1)
+echo $epnumber
+
+# Now we add +1 to the $vidcount to get the episode number for the current video
+epnumber=$((epnumber+1))
+index=$(printf "%02d\n" $epnumber) #Adding a padding zero
+
+echo "The next file will be episode number: "
+echo S"$seasonyear"E"$index"
+echo "----------------------------------------"
+
+# -----------------------------------------------------------------------------
+# Downloading video using youtube-dl
+# -----------------------------------------------------------------------------
+
+#Go back to the youtube working directory within the plex media library
+cd ..
+
+/usr/local/bin/youtube-dl "$vidurl" \
+-o "%(uploader)s/%(uploader)s - S${seasonyear}E${index} - %(title)s [%(upload_date)s] [%(id)s].%(ext)s" \
+-f 'bestvideo[height<=720]+bestaudio[ext=m4a]/best[height<=720]' \
+--merge-output-format mp4 \
+--download-archive tv-on-youtube_downloaded.txt \
+--write-thumbnail \
+--write-sub --sub-lang en \
+--ignore-errors --no-continue --no-overwrites --no-post-overwrites \
+--embed-thumbnail --embed-subs \
+--add-metadata
+
+# youtube-dl switches explained
+# -o    follow renaming scheme
+# -f    download videos of a certain format
+# --merge-output-format     saving videos as .mp4 files. This is required for thumbnails to be added (mkv does not work presently)
+# --download archive    youtube-dl will save a list of all videos you download using this script into the text file provided. This prevents you from downloading the same video multiple times by mistake
+# --write thumnail  saves a copy of the thumnail as .jpg alongside the video file. It will follow the same naming scheme as -o provides, allowing Plex to use the thumbnail
+# --write-sub   saves an external subtitle file
+# --sub-lang en only saving English subtitles
+# --ignore-errors   if an error downloading the video is encountered, report it and proceed
+# --no-continue Do not resume partially downloaded files (restart from beginning)
+# --no-overwrites       Do not overwrite files
+# --no-post-overwrites  Do not overwrite post-processing files
+# --embed-thumnail  save the thumnail inside of the mp4 container
+# --embed-subs  save the subtitle files inside of the mp4 container
+# --add-metadata    Writes the video metadata (ie description) to the mp4 container. Will be picked up by Plex
+
+echo "The file has been downloaded"
+echo "-----------------------------"

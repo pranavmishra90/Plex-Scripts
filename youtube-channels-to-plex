@@ -1,0 +1,113 @@
+#!/bin/bash
+
+#---------------------------------------------------
+#Listing Channels that have been downloaded already
+#---------------------------------------------------
+
+
+cd /volume1/Plex-Media/Youtube/Education
+echo "Youtube Education Channels already downloaded"
+echo "------------------------------------"
+ls -1
+echo "------------------------------------"
+echo ""
+echo ""
+
+cd /volume1/Plex-Media/Youtube/TV-on-Youtube 
+echo "TV Shows on Youtube already downloaded"
+echo "------------------------------------"
+ls -1
+echo "------------------------------------"
+echo ""
+echo ""
+
+#-------------------------------------
+#Download entire educational channel
+#-------------------------------------
+
+echo "Downloading complete education channels"
+cd /volume1/Plex-Media/Youtube/Education
+echo "------------------------------------"
+ls -1
+echo "------------------------------------"
+echo ""
+echo ""
+
+/usr/local/bin/youtube-dl --playlist-reverse --batch-file=education_allvideos.txt \
+-i -o "%(uploader)s/%(uploader)s - S01E%(playlist_index)s - %(title)s [%(upload_date)s] [%(id)s].%(ext)s" \
+-f 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]' --merge-output-format mp4 \
+--download-archive education_downloaded.txt \
+--ignore-config \
+--write-thumbnail --embed-subs --write-sub --sub-lang en \
+--ignore-errors --no-continue --no-overwrites --no-post-overwrites \
+--embed-thumbnail \
+--add-metadata
+
+#Print the current date to the downloaded archive
+
+date >> education_downloaded.txt
+
+#---------------------------------------
+#Download entire TV-on-Youtube channel
+#---------------------------------------
+
+echo "Downloading complete TV-on-Youtube channels"
+
+#Switch to the Youtube Channels (Non-educational) folder in the Plex Media directory
+cd /volume1/Plex-Media/Youtube/TV-on-Youtube 
+echo "------------------------------------"
+ls -1
+echo "------------------------------------"
+echo ""
+echo ""
+
+/usr/local/bin/youtube-dl --playlist-reverse --batch-file=tv-on-youtube_allvideos.txt \
+-i -o "%(uploader)s/%(uploader)s - S01E%(playlist_index)s - %(title)s [%(upload_date)s] [%(id)s].%(ext)s" \
+-f 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]' --merge-output-format mp4 \
+--download-archive tv-on-youtube_downloaded.txt \
+--ignore-config \
+--write-thumbnail --embed-subs --write-sub --sub-lang en \
+--ignore-errors --no-continue --no-overwrites --no-post-overwrites \
+--embed-thumbnail \
+--add-metadata
+
+#-----------------------------------------------
+#Download channel starting with 10 newest videos
+#-----------------------------------------------
+
+echo "Downloading channel with 10 newest videos"
+
+/usr/local/bin/youtube-dl --batch-file=10_newest_list.txt \
+-i -o "%(uploader)s/%(uploader)s - S01E%(playlist_index)s - %(title)s [%(upload_date)s] [%(id)s].%(ext)s" \
+-f 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]' --merge-output-format mp4 \
+--download-archive tv-on-youtube_downloaded.txt \
+--ignore-config \
+--write-thumbnail --embed-subs --write-sub --sub-lang en \
+--ignore-errors --no-continue --no-overwrites --no-post-overwrites \
+--embed-thumbnail \
+--add-metadata \
+--max-downloads 10
+
+
+#----------------------------------
+#Download videos after Jan 1, 2019
+#----------------------------------
+
+echo "downloading 2019 channel videos"
+
+/usr/local/bin/youtube-dl --playlist-reverse --batch-file=2019onwards_list.txt \
+-i -o "%(uploader)s/%(uploader)s - S01E%(playlist_index)s - %(title)s [%(upload_date)s] [%(id)s].%(ext)s" \
+-f 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]' --merge-output-format mp4 \
+--dateafter 20190101 \
+--download-archive tv-on-youtube_downloaded.txt \
+--ignore-config \
+--write-thumbnail --embed-subs --write-sub --sub-lang en \
+--ignore-errors --no-continue --no-overwrites --no-post-overwrites \
+--embed-thumbnail \
+--add-metadata
+
+#Print the current date to the downloaded archive
+date >> tv-on-youtube_downloaded.txt
+
+echo "---------------------"
+echo "Youtube-For-Plex Complete"
