@@ -1,0 +1,74 @@
+# This is a script which is for retention of video files on a Plex Server (DVR)
+# The sample use case is retaining only the most recent news program (i.e. yesterday's news)
+
+# The original script was designed to find all videos older than 10 hours and delete them. This would
+# run daily at 6:30pm by a cron job. Essentially this was "delete all episodes older than 10 hours"
+
+# The new script is designed to save the most recent video file. This allows for weekly programs with
+# episodes older than 1 day, to be retained. Essentially this becomes "keep latest 1 episode" 
+
+# --------------------------------------------------------------------------------------------------
+# MIT License
+
+# Copyright (c) 2020 Pranav Mishra
+# Online repository at https://github.com/pranavmishra90
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# --------------------------------------------------------------------------------------------------
+
+# It is recommended to run this as a cron job daily
+
+# Uncomment following line if you need the script executed as bash
+#!/bin/bash
+
+
+#News Directory - follwing the 'cd' command, enter the parent directory which you would like the script to run on
+cd /volume1/Plex-Media/News
+
+shopt -s globstar
+for dir in **/; do
+	#The script will enter into each folder, search each subdirectory, with depth '1'. 
+	#This means that your folder structure should be:
+	# /News
+	# /News/Show-1/Season X
+	# /News/Show-1/Season Y
+
+	# /News/Show-2/Season X
+	# /News/Show-2/Season Y
+
+	# /News/Show-3/Season X
+	# /News/Show-3/Season Y
+
+
+	# The script will enter each season folder, find the latest episode, and delete all of the others
+    find "$dir" -maxdepth 1 -type f -printf '%T@ %p\0' |
+	        sort -rnz |
+			        sed -nz '2,$s/[^ ]* //p' 
+					done | xargs -0 rm --
+
+
+#------------------------------------------------------------------
+# !!Older script!! - Depracated
+# Deletes all .ts and .mp4 files older than 10 hours. 
+#------------------------------------------------------------------
+
+#ls *.ts -t | tail -n +2 | xargs rm --
+
+#find . -type f -name "*.mp4" -o -name "*.ts" -mmin +600
+#find . -type f -name "*.mp4" -o -name "*.ts" -mmin +600 -delete
