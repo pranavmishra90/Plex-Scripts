@@ -84,7 +84,9 @@ As you can imagine, ordering something from a restaurant, and expecting a delive
 The kitchen will make bite sized food that's small enough to put in tiny containers which fit in a backpack. It will race them to you on a motorcycle which can race off to find you, and hand it off to you through the window. The kitchen can whip up these tiny meals relatively easily, but getting them to you is the hard part. People are typically great at eating bite sized finger foods though (good clients).
 
 **~Carrying out a gormet meal to eat on a plane**
+
 `1080p --> 1080p Plex Pass sync`
+
 You're the kind of person who likes to dine in style even when you're on the go, so you plan ahead. You place an order a day early to the restaurant for some good food. Delivery times are irrelevant because you offer to pick it up yourself when you get off work. And you'll be able to eat this flying at 35,000 feet, where there are no restaurants around to order from. This is analogous to *sync/download* (a Plex Pass feature). 
 
 Here you can have the kitchen prepare you high quality stuff and you take the responsibility of the transfer and remote plating. Sync/Downloads is wonderful because you can have high quality videos, even without internet, if you're okay with not having it "on-demand". You need to request the download, have the Plex server prepare it, and download the file. This means you have to plan head of time and have a Plex server that is capable of offering this service to you (this is a paid Plex Pass feature).
