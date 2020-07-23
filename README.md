@@ -3,6 +3,7 @@ Scripts that improve your plex server
 
 # MIT License
 Copyright (c) 2020 Pranav Mishra
+
 Online repository at https://github.com/pranavmishra90
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
