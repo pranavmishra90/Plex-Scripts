@@ -57,7 +57,8 @@ for dir in **/; do
 
 
 	# The script will enter each season folder, find the latest episode, and delete all of the others
-    find "$dir" -maxdepth 1 -type f -printf '%T@ %p\0' |
+	# It will only find .ts containered files (which are recorded by the DVR)
+    	find "$dir" -maxdepth 1 -type f -name '*.ts' -printf '%T@ %p\0' |
 	        sort -rnz |
 
 					# The value of the number below should be n+1, where 'n' is the number of files you want
