@@ -1,4 +1,5 @@
 # Plex-Scripts
+![GitHub last commit](https://img.shields.io/github/last-commit/pranavmishra90/plex-scripts?label=Latest%20Commit)
 Scripts that improve your plex server
 
 # MIT License
